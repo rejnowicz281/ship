@@ -7,15 +7,14 @@ export default function PlayPage() {
     const [ships, setShips] = useState([]);
 
     function addShip(row, column) {
-        setShips((ships) => {
-            return [...ships, { row, column }];
-        });
+        if (ships.length < 5) setShips((ships) => [...ships, { row, column }]);
+        else return null;
     }
 
     return (
         <div>
             <h1>place yo ships</h1>
-            <Board onCellClick={(row, column) => (ships.length < 5 ? addShip(row, column) : null)} />
+            <Board onCellClick={addShip} ships={ships} />
             {ships.length >= 5 && (
                 <div>
                     you placed all ships <button>Start</button>

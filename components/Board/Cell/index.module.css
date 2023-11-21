@@ -1,0 +1,15 @@
+.cell {
+    background-color: pink;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.cell:hover {
+    background-color: aliceblue;
+}
+
+.occupied {
+    background-color: rgb(56, 56, 56);
+}

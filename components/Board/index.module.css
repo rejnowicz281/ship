@@ -5,19 +5,3 @@
     background-color: red;
     gap: 1px;
 }
-
-.cell {
-    background-color: pink;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.occupied {
-    background-color: rgb(56, 56, 56);
-}
-
-.cell:hover {
-    background-color: aliceblue;
-}
