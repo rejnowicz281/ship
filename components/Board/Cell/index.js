@@ -4,9 +4,7 @@ export default function Cell({ showOccupied, row, column, onCellClick, ships }) 
     function getClassName() {
         let className = `${css.cell}`;
         ships.forEach((ship) => {
-            if (ship.row == row && ship.column == column) {
-                if (showOccupied) className += ` ${css.occupied}`;
-            }
+            if (ship.some((e) => e.row == row && e.column == column) && showOccupied) className += ` ${css.occupied}`;
         });
 
         return className;
