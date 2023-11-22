@@ -1,6 +1,7 @@
 "use client";
 
 import Board from "@/components/Board";
+import generateRandomColor from "@/lib/generateRandomColor";
 import { useEffect, useState } from "react";
 
 export default function Start() {
@@ -24,29 +25,36 @@ export default function Start() {
 
     function addShip(row, column) {
         if (ships.length < 5) {
-            let ship_array = [];
-            let iter = [...Array(5 - ships.length)];
-            let valid = true;
+            let new_ship = [];
+            let x_times = [...Array(5 - ships.length)];
 
-            if (direction == "right") ship_array = iter.map((e, i) => ({ row, column: column + i }));
-            else if (direction == "left") ship_array = iter.map((e, i) => ({ row, column: column - i }));
-            else if (direction == "up") ship_array = iter.map((e, i) => ({ row: row - i, column }));
-            else if (direction == "down") ship_array = iter.map((e, i) => ({ row: row + i, column }));
-            // populate ship array based on direction and length, for example [{row: 0, column: 0}, {row: 0, column: 1}, ...]
+            new_ship = {
+                direction,
+                color: generateRandomColor(),
+                cells: x_times.map((_, i) => ({
+                    row: direction == "down" ? row + i : direction == "up" ? row - i : row,
+                    column: direction == "right" ? column + i : direction == "left" ? column - i : column,
+                })), // populate new_ship based on direction and length, for example [{row: 0, column: 0}, {row: 0, column: 1}, ...]
+            };
 
-            ship_array.forEach((cell) => {
-                if (
-                    cell.row < 0 ||
-                    cell.row > 9 ||
-                    cell.column < 0 ||
-                    cell.column > 9 ||
-                    ships.some((ship) => ship.some((e) => e.row == cell.row && e.column == cell.column))
-                )
-                    // make sure ship is in bounds and not overlapping with other ships
-                    valid = false;
+            let invalid = new_ship.cells.some((new_ship_cell) => {
+                return (
+                    new_ship_cell.row < 0 ||
+                    new_ship_cell.row > 9 ||
+                    new_ship_cell.column < 0 ||
+                    new_ship_cell.column > 9 ||
+                    ships.some((ship) =>
+                        ship.cells.some(
+                            (placed_ship_cell) =>
+                                placed_ship_cell.row === new_ship_cell.row &&
+                                placed_ship_cell.column === new_ship_cell.column
+                        )
+                    )
+                ); // check if new_ship_cell is already occupied by another ship or is out of bounds
             });
 
-            if (valid) setShips((ships) => [...ships, ship_array]);
+            console.log(new_ship);
+            if (!invalid) setShips((ships) => [...ships, new_ship]);
         }
     }
 
