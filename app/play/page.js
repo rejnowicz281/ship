@@ -7,8 +7,10 @@ export default function PlayPage() {
     const [ships, setShips] = useState([]);
 
     function addShip(row, column) {
-        if (ships.length < 5) setShips((ships) => [...ships, { row, column }]);
-        else return null;
+        if (ships.length < 5) {
+            if (ships.some((ship) => ship.row == row && ship.column == column)) return null;
+            setShips((ships) => [...ships, { row, column }]);
+        } else return null;
     }
 
     return (
