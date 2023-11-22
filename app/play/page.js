@@ -14,7 +14,7 @@ export default function PlayPage() {
     return (
         <div>
             <h1>place yo ships</h1>
-            <Board onCellClick={addShip} ships={ships} />
+            <Board onCellClick={addShip} ships={ships} showOccupied={true} />
             {ships.length >= 5 && (
                 <div>
                     you placed all ships <button>Start</button>
