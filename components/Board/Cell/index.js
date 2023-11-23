@@ -1,9 +1,11 @@
 import css from "./index.module.css";
 import generateStyle from "./lib/generateStyle";
 
-export default function Cell({ showOccupied, row, column, onCellClick, ships }) {
-    function getStyles() {
-        let className = `${css.cell}`;
+export default function Cell({ showOccupied, row, column, onCellClick, ships, misses }) {
+    function getStyle() {
+        if (misses.some((miss) => miss.row === row && miss.column === column))
+            return { style: { backgroundColor: "red" } };
+
         let style = null;
         let done = false;
 
@@ -20,18 +22,21 @@ export default function Cell({ showOccupied, row, column, onCellClick, ships }) 
 
                         style = generateStyle(ship.color, ship.direction, isLast, isFirst);
                     }
-                    // To Do: classes/styles for hit and miss
+
+                    if (cell.hit) style = { backgroundColor: "black" };
+
                     done = true;
                 }
             });
         });
-        return { className, style };
+
+        return { style };
     }
 
-    const { className, style } = getStyles();
+    const { style } = getStyle();
 
     return (
-        <div style={style} className={className} onClick={() => onCellClick(row, column)}>
+        <div style={style} className={css.cell} onClick={() => onCellClick(row, column)}>
             {row} {column}
         </div>
     );

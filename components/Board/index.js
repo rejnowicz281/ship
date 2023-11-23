@@ -1,7 +1,7 @@
 import Cell from "./Cell";
 import css from "./index.module.css";
 
-export default function Board({ onCellClick, ships, showOccupied }) {
+export default function Board({ onCellClick = () => null, ships = [], showOccupied = true, misses = [] }) {
     return (
         <div className={css.board}>
             {[...Array(10)].map((e, row) =>
@@ -12,6 +12,7 @@ export default function Board({ onCellClick, ships, showOccupied }) {
                         row={row}
                         column={column}
                         onCellClick={onCellClick}
+                        misses={misses}
                         key={`${row}${column}`}
                     />
                 ))
