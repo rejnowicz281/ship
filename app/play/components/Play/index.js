@@ -2,8 +2,8 @@
 
 import Board from "@/components/Board";
 import { useState } from "react";
+import generateRandomShips from "../../../../lib/generateRandomShips";
 import css from "./index.module.css";
-import generateRandomShips from "./lib/generateRandomShips";
 
 export default function Play({ playerShips }) {
     const [computerShips, setComputerShips] = useState(generateRandomShips());

@@ -3,6 +3,7 @@
 import Board from "@/components/Board";
 import generateRandomColor from "@/lib/generateRandomColor";
 import { useEffect, useState } from "react";
+import generateRandomShips from "../../lib/generateRandomShips";
 import Play from "./components/Play";
 
 export default function PlayPage() {
@@ -67,6 +68,8 @@ export default function PlayPage() {
         return (
             <div>
                 <h1>place yo ships</h1>
+                <button onClick={() => setShips(generateRandomShips())}>random placement</button>
+                <button onClick={() => setShips([])}>reset board</button>
                 <Board onCellClick={addShip} ships={ships} showOccupied={true} />
                 {ships.length >= 5 ? (
                     <div>
