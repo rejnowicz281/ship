@@ -13,11 +13,22 @@ export default function PlayPage() {
 
     useEffect(() => {
         if (!started) {
-            function directionOnScroll() {
-                if (direction == "left") setDirection("right");
-                else if (direction == "right") setDirection("up");
-                else if (direction == "up") setDirection("down");
-                else if (direction == "down") setDirection("left");
+            function directionOnScroll(e) {
+                const directions = ["left", "right", "up", "down"];
+
+                let current_direction_index = directions.indexOf(direction);
+
+                if (e.deltaY > 0) {
+                    // if scrolling down, change direction clockwise
+                    if (current_direction_index === 3) current_direction_index = 0;
+                    else current_direction_index++;
+                } else {
+                    // if scrolling up, change direction counter-clockwise
+                    if (current_direction_index === 0) current_direction_index = 3;
+                    else current_direction_index--;
+                }
+
+                setDirection(directions[current_direction_index]);
             }
 
             document.addEventListener("wheel", directionOnScroll);
