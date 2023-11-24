@@ -51,11 +51,16 @@ export default function PlayPage() {
                     hit: false,
                     row: direction == "down" ? row + i : direction == "up" ? row - i : row,
                     column: direction == "right" ? column + i : direction == "left" ? column - i : column,
-                })), // populate new_ship based on direction and length, for example [{row: 0, column: 0}, {row: 0, column: 1}, ...]
+                })),
             };
+            // populate new_ship based on direction and length, for example:
+            // { direction: "right",
+            //   color: "#ff0000",
+            //   cells: [{hit: false, row: 0, column: 0}, {hit: false, row: 0, column: 1}, ...]
+            // }
 
-            let invalid = new_ship.cells.some((new_ship_cell) => {
-                return (
+            let invalid = new_ship.cells.some(
+                (new_ship_cell) =>
                     new_ship_cell.row < 0 ||
                     new_ship_cell.row > 9 ||
                     new_ship_cell.column < 0 ||
@@ -67,14 +72,13 @@ export default function PlayPage() {
                                 placed_ship_cell.column === new_ship_cell.column
                         )
                     )
-                ); // check if new_ship_cell is already occupied by another ship or is out of bounds
-            });
+            ); // check if new_ship_cell is already occupied by another ship or is out of bounds
 
             if (!invalid) setShips((ships) => [...ships, new_ship]);
         }
     }
 
-    if (started) return <Play playerShips={ships} />;
+    if (started) return <Play initialPlayerShips={ships} />;
     else
         return (
             <div>
