@@ -4,6 +4,7 @@ import Board from "@/components/Board";
 import { useState } from "react";
 import generateRandomShips from "../../../../lib/generateRandomShips";
 import css from "./index.module.css";
+import getLegalShots from "./lib/getLegalShots";
 
 export default function Play({ initialPlayerShips }) {
     const [playerShips, setPlayerShips] = useState(initialPlayerShips);
@@ -14,49 +15,40 @@ export default function Play({ initialPlayerShips }) {
     function shoot(shooter = "player", random = false, initial_row = 0, initial_column = 0) {
         const misses = shooter == "player" ? playerMisses : computerMisses;
         const setMisses = shooter == "player" ? setPlayerMisses : setComputerMisses;
+        const opponentShips = shooter == "player" ? computerShips : playerShips;
         const setOpponentShips = shooter == "player" ? setComputerShips : setPlayerShips;
-        const row = shooter == "computer" || random ? Math.floor(Math.random() * 10) : initial_row;
-        const column = shooter == "computer" || random ? Math.floor(Math.random() * 10) : initial_column;
 
-        if (misses.some((miss) => miss.row === row && miss.column === column))
-            return random ? shoot(shooter, true) : null;
+        const legal_shots = getLegalShots(misses, opponentShips);
 
-        let found = false;
-        let no_change = false;
-        let has_already_shot = false;
+        if (legal_shots.length === 0) return; // if there are no legal shots available, don't shoot (this should never happen)
 
-        setOpponentShips((prev) => {
-            if (has_already_shot) return prev;
+        const cell_shot =
+            // if shooter is computer or the shot is specified as random, get a random cell
+            // if shot is not random, get the cell that was given in params (initial_row, initial_column)
+            shooter == "computer" || random
+                ? legal_shots[Math.floor(Math.random() * legal_shots.length)]
+                : legal_shots.find((shot) => shot.row === initial_row && shot.column === initial_column);
 
-            let new_ships = [...prev];
+        // check if cell_shot is not undefined (only check if it's not a random shot, since those always return a cell)
+        if (!random && !cell_shot) return;
 
-            new_ships.forEach((ship, i) => {
-                if (found) return; // if we already found the ship we don't need to check the rest
+        const { row, column, occupied } = cell_shot; // get the row, column and occupied status of the cell that was shot
 
-                ship.cells.forEach((cell, j) => {
-                    if (found) return;
+        if (occupied) {
+            setOpponentShips((prev) => {
+                return prev.map((ship) => {
+                    const updatedCells = ship.cells.map((cell) => {
+                        if (cell.row === row && cell.column === column) return { ...cell, hit: true };
+                        // if the cell is the one that was shot, return the cell with hit set to true
 
-                    if (cell.row === row && cell.column === column) {
-                        found = true;
-
-                        if (cell.hit) {
-                            no_change = true;
-                            if (random) shoot(shooter, true);
-                        } else new_ships[i].cells[j].hit = true;
-                    }
+                        return cell;
+                    });
+                    return { ...ship, cells: updatedCells };
                 });
             });
+        } else setMisses((prev) => [...prev, { row, column }]);
 
-            if (!found) setMisses((prev) => [...prev, { row, column }]);
-
-            has_already_shot = true;
-
-            if (no_change) return prev;
-            else {
-                if (shooter == "player") shoot("computer", true);
-                return new_ships;
-            }
-        });
+        if (shooter == "player") shoot("computer", true); // make the computer shoot after the player
     }
 
     return (
