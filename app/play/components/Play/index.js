@@ -1,7 +1,7 @@
 "use client";
 
 import Board from "@/components/Board";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import generateRandomShips from "../../../../lib/generateRandomShips";
 import css from "./index.module.css";
 import getLegalShots from "./lib/getLegalShots";
@@ -11,6 +11,19 @@ export default function Play({ initialPlayerShips }) {
     const [computerShips, setComputerShips] = useState(generateRandomShips());
     const [computerMisses, setComputerMisses] = useState([]);
     const [playerMisses, setPlayerMisses] = useState([]);
+    const [win, setWin] = useState(null);
+
+    useEffect(() => {
+        const playerShipsSunk = playerShips.every((ship) => ship.cells.every((cell) => cell.hit));
+
+        if (playerShipsSunk) setWin("computer");
+    }, [playerShips]);
+
+    useEffect(() => {
+        const computerShipsSunk = computerShips.every((ship) => ship.cells.every((cell) => cell.hit));
+
+        if (computerShipsSunk) setWin("player");
+    }, [computerShips]);
 
     function shoot(shooter = "player", random = false, initial_row = 0, initial_column = 0) {
         const misses = shooter == "player" ? playerMisses : computerMisses;
@@ -60,12 +73,16 @@ export default function Play({ initialPlayerShips }) {
             <div>
                 <h2>computer board</h2>
                 <Board
-                    onCellClick={(row, column) => shoot("player", false, row, column)}
+                    onCellClick={win ? undefined : (row, column) => shoot("player", false, row, column)}
                     ships={computerShips}
                     showOccupied={true}
                     misses={playerMisses}
                 />
-                <button onClick={() => shoot("player", true)}>random shot</button>
+                {win ? (
+                    <h2>{win === "player" ? "you win!" : win === "computer" ? "you lose :(" : null}</h2>
+                ) : (
+                    <button onClick={() => shoot("player", true)}>random shot</button>
+                )}
             </div>
         </div>
     );
