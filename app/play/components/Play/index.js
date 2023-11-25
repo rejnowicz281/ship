@@ -19,7 +19,7 @@ export default function Play({ initialPlayerShips }) {
         const column = shooter == "computer" || random ? Math.floor(Math.random() * 10) : initial_column;
 
         if (misses.some((miss) => miss.row === row && miss.column === column))
-            return random ? shoot(shooter, true, row, column) : null;
+            return random ? shoot(shooter, true) : null;
 
         let found = false;
         let no_change = false;
@@ -41,7 +41,7 @@ export default function Play({ initialPlayerShips }) {
 
                         if (cell.hit) {
                             no_change = true;
-                            if (random) shoot(shooter, true, row, column);
+                            if (random) shoot(shooter, true);
                         } else new_ships[i].cells[j].hit = true;
                     }
                 });
@@ -61,13 +61,20 @@ export default function Play({ initialPlayerShips }) {
 
     return (
         <div className={css.container}>
-            <Board ships={playerShips} showOccupied={true} misses={computerMisses} />
-            <Board
-                onCellClick={(row, column) => shoot("player", false, row, column)}
-                ships={computerShips}
-                showOccupied={true}
-                misses={playerMisses}
-            />
+            <div>
+                <h2>your board</h2>
+                <Board ships={playerShips} showOccupied={true} misses={computerMisses} />
+            </div>
+            <div>
+                <h2>computer board</h2>
+                <Board
+                    onCellClick={(row, column) => shoot("player", false, row, column)}
+                    ships={computerShips}
+                    showOccupied={true}
+                    misses={playerMisses}
+                />
+                <button onClick={() => shoot("player", true)}>random shot</button>
+            </div>
         </div>
     );
 }
