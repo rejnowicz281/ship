@@ -1,7 +1,8 @@
 "use client";
 
 import Board from "@/components/Board";
-import generateRandomColor from "@/lib/generateRandomColor";
+import generateShipObject from "@/lib/generateShipObject";
+import isShipInvalid from "@/lib/isShipInvalid";
 import { useEffect, useState } from "react";
 import generateRandomShips from "../../lib/generateRandomShips";
 import Play from "./components/Play";
@@ -41,38 +42,9 @@ export default function PlayPage() {
 
     function addShip(row, column) {
         if (ships.length < 5) {
-            let new_ship = [];
-            let x_times = [...Array(5 - ships.length)];
+            const new_ship = generateShipObject(direction, 5 - ships.length, row, column);
 
-            new_ship = {
-                direction,
-                color: generateRandomColor(),
-                cells: x_times.map((_, i) => ({
-                    hit: false,
-                    row: direction == "down" ? row + i : direction == "up" ? row - i : row,
-                    column: direction == "right" ? column + i : direction == "left" ? column - i : column,
-                })),
-            };
-            // populate new_ship based on direction and length, for example:
-            // { direction: "right",
-            //   color: "#ff0000",
-            //   cells: [{hit: false, row: 0, column: 0}, {hit: false, row: 0, column: 1}, ...]
-            // }
-
-            let invalid = new_ship.cells.some(
-                (new_ship_cell) =>
-                    new_ship_cell.row < 0 ||
-                    new_ship_cell.row > 9 ||
-                    new_ship_cell.column < 0 ||
-                    new_ship_cell.column > 9 ||
-                    ships.some((ship) =>
-                        ship.cells.some(
-                            (placed_ship_cell) =>
-                                placed_ship_cell.row === new_ship_cell.row &&
-                                placed_ship_cell.column === new_ship_cell.column
-                        )
-                    )
-            ); // check if new_ship_cell is already occupied by another ship or is out of bounds
+            let invalid = isShipInvalid(new_ship, ships);
 
             if (!invalid) setShips((ships) => [...ships, new_ship]);
         }
