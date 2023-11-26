@@ -25,14 +25,15 @@ export default function Cell({ showOccupied, tips, row, column, onCellClick, shi
                 if (done) return;
 
                 if (cell.row == row && cell.column == column) {
+                    if (ship.sunk()) className += ` ${css.sunk}`;
+                    else if (cell.hit) className += ` ${css.hit}`;
+
                     if (showOccupied) {
                         const isLast = i == ship.cells.length - 1;
                         const isFirst = i == 0;
 
                         style = generateStyle(ship.color, ship.direction, isLast, isFirst);
                     }
-
-                    if (cell.hit) className += ` ${css.hit}`;
 
                     done = true;
                 }
