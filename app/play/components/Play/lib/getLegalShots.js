@@ -30,33 +30,17 @@ export default function getLegalShots(misses, opponentShips, smart) {
         opponentShips.forEach((ship) => {
             if (ship.sunk()) return;
 
-            const hit_cells = ship.cells.filter((cell) => cell.hit); // get the cells of the ship that have been hit
-            const orientation = // if the ship has been hit more than once, you can determine its orientation
-                hit_cells.length > 1 &&
-                (ship.direction == "left" || ship.direction == "right" ? "horizontal" : "vertical");
-
             ship.cells.forEach((cell) => {
                 if (!cell.hit) return;
 
                 const { row, column } = cell;
 
-                const shot_candidates =
-                    orientation == "horizontal"
-                        ? [
-                              { row, column: column - 1 },
-                              { row, column: column + 1 },
-                          ]
-                        : orientation == "vertical"
-                        ? [
-                              { row: row - 1, column },
-                              { row: row + 1, column },
-                          ]
-                        : [
-                              { row: row - 1, column },
-                              { row: row + 1, column },
-                              { row, column: column - 1 },
-                              { row, column: column + 1 },
-                          ];
+                const shot_candidates = [
+                    { row: row - 1, column },
+                    { row: row + 1, column },
+                    { row, column: column - 1 },
+                    { row, column: column + 1 },
+                ];
 
                 shot_candidates.forEach((shot) => {
                     legal_shots.forEach((legal_shot) => {
