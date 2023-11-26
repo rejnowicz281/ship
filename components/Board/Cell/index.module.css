@@ -5,6 +5,32 @@
     cursor: pointer;
 }
 
-.cell:hover {
+.cell:hover,
+.tip {
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+.tip {
+    animation: tip 1s infinite;
+    font-weight: bold;
+}
+
+@keyframes tip {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.miss {
+    background-color: #ff0000;
+}
+
+.hit {
+    background-color: black !important;
 }

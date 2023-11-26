@@ -1,12 +1,21 @@
 import css from "./index.module.css";
 import generateStyle from "./lib/generateStyle";
 
-export default function Cell({ showOccupied, row, column, onCellClick, ships, misses }) {
+export default function Cell({ showOccupied, tips, row, column, onCellClick, ships, misses }) {
     function getStyle() {
-        if (misses.some((miss) => miss.row === row && miss.column === column))
-            return { style: { backgroundColor: "red" } };
+        let className = css.cell;
+        let style = undefined;
 
-        let style = null;
+        if (tips?.some((tip) => tip.row === row && tip.column === column)) {
+            className += ` ${css.tip}`;
+            return { style, className };
+        }
+
+        if (misses.some((miss) => miss.row === row && miss.column === column)) {
+            className += ` ${css.miss}`;
+            return { style, className };
+        }
+
         let done = false;
 
         ships.forEach((ship) => {
@@ -23,20 +32,20 @@ export default function Cell({ showOccupied, row, column, onCellClick, ships, mi
                         style = generateStyle(ship.color, ship.direction, isLast, isFirst);
                     }
 
-                    if (cell.hit) style = { backgroundColor: "black" };
+                    if (cell.hit) className += ` ${css.hit}`;
 
                     done = true;
                 }
             });
         });
 
-        return { style };
+        return { style, className };
     }
 
-    const { style } = getStyle();
+    const { style, className } = getStyle();
 
     return (
-        <div style={style} className={css.cell} onClick={() => onCellClick(row, column)}>
+        <div style={style} className={className} onClick={() => onCellClick(row, column)}>
             {row} {column}
         </div>
     );

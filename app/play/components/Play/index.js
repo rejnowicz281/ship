@@ -11,6 +11,7 @@ export default function Play({ initialPlayerShips }) {
     const [computerShips, setComputerShips] = useState(generateRandomShips());
     const [computerMisses, setComputerMisses] = useState([]);
     const [playerMisses, setPlayerMisses] = useState([]);
+    const [tips, setTips] = useState(null);
     const [win, setWin] = useState(null);
 
     useEffect(() => {
@@ -19,27 +20,37 @@ export default function Play({ initialPlayerShips }) {
         if (playerShipsSunk) setWin("computer");
     }, [playerShips]);
 
+    // every time a ship is sunk, check if all ships are sunk
+
     useEffect(() => {
         const computerShipsSunk = computerShips.every((ship) => ship.cells.every((cell) => cell.hit));
 
         if (computerShipsSunk) setWin("player");
     }, [computerShips]);
 
-    function shoot(shooter = "player", random = false, initial_row = 0, initial_column = 0) {
+    useEffect(() => {
+        if (tips) populateTips(); // if tips are shown, update them every time the player shoots
+    }, [playerShips, computerShips, playerMisses, computerMisses]);
+
+    function shoot(shooter = "player", random = false, smart = true, initial_row = 0, initial_column = 0) {
         const misses = shooter == "player" ? playerMisses : computerMisses;
         const setMisses = shooter == "player" ? setPlayerMisses : setComputerMisses;
         const opponentShips = shooter == "player" ? computerShips : playerShips;
         const setOpponentShips = shooter == "player" ? setComputerShips : setPlayerShips;
 
-        const legal_shots = getLegalShots(misses, opponentShips);
+        const legal_shots = getLegalShots(misses, opponentShips, smart);
 
         if (legal_shots.length === 0) return; // if there are no legal shots available, don't shoot (this should never happen)
 
         const cell_shot =
             // if shooter is computer or the shot is specified as random, get a random cell
+            // if shot is specified as smart and random, get a smart cell, else get a random cell
             // if shot is not random, get the cell that was given in params (initial_row, initial_column)
             shooter == "computer" || random
-                ? legal_shots[Math.floor(Math.random() * legal_shots.length)]
+                ? smart
+                    ? legal_shots.find((shot) => shot.smart) || // if there are no smart shots available, shoot randomly
+                      legal_shots[Math.floor(Math.random() * legal_shots.length)]
+                    : legal_shots[Math.floor(Math.random() * legal_shots.length)]
                 : legal_shots.find((shot) => shot.row === initial_row && shot.column === initial_column);
 
         // check if cell_shot is not undefined (only check if it's not a random shot, since those always return a cell)
@@ -64,6 +75,14 @@ export default function Play({ initialPlayerShips }) {
         if (shooter == "player") shoot("computer", true); // make the computer shoot after the player
     }
 
+    function populateTips() {
+        setTips(getLegalShots(playerMisses, computerShips, true).filter((shot) => shot.smart));
+    }
+
+    function resetTips() {
+        setTips(null);
+    }
+
     return (
         <div className={css.container}>
             <div>
@@ -73,7 +92,8 @@ export default function Play({ initialPlayerShips }) {
             <div>
                 <h2>computer board</h2>
                 <Board
-                    onCellClick={win ? undefined : (row, column) => shoot("player", false, row, column)}
+                    tips={tips}
+                    onCellClick={win ? undefined : (row, column) => shoot("player", false, false, row, column)}
                     ships={computerShips}
                     showOccupied={true}
                     misses={playerMisses}
@@ -81,7 +101,13 @@ export default function Play({ initialPlayerShips }) {
                 {win ? (
                     <h2>{win === "player" ? "you win!" : win === "computer" ? "you lose :(" : null}</h2>
                 ) : (
-                    <button onClick={() => shoot("player", true)}>random shot</button>
+                    <>
+                        <button onClick={() => shoot("player", true, false)}>random shot</button>
+                        <button onClick={() => shoot("player", true)}>smart shot</button>
+                        <button onClick={() => (tips ? resetTips() : populateTips())}>
+                            {tips ? "hide tips" : "show tips"}
+                        </button>
+                    </>
                 )}
             </div>
         </div>

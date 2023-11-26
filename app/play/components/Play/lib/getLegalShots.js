@@ -1,5 +1,5 @@
-export default function getLegalShots(misses, opponentShips) {
-    return [...Array(10).keys()]
+export default function getLegalShots(misses, opponentShips, smart) {
+    const legal_shots = [...Array(10).keys()]
         .map(
             (i) =>
                 [...Array(10).keys()]
@@ -25,4 +25,48 @@ export default function getLegalShots(misses, opponentShips) {
                     .filter((shot) => shot !== undefined) // clean up
         )
         .flat();
+
+    if (smart) {
+        opponentShips.forEach((ship) => {
+            if (ship.sunk()) return;
+
+            const hit_cells = ship.cells.filter((cell) => cell.hit); // get the cells of the ship that have been hit
+            const orientation = // if the ship has been hit more than once, you can determine its orientation
+                hit_cells.length > 1 &&
+                (ship.direction == "left" || ship.direction == "right" ? "horizontal" : "vertical");
+
+            ship.cells.forEach((cell) => {
+                if (!cell.hit) return;
+
+                const { row, column } = cell;
+
+                const shot_candidates =
+                    orientation == "horizontal"
+                        ? [
+                              { row, column: column - 1 },
+                              { row, column: column + 1 },
+                          ]
+                        : orientation == "vertical"
+                        ? [
+                              { row: row - 1, column },
+                              { row: row + 1, column },
+                          ]
+                        : [
+                              { row: row - 1, column },
+                              { row: row + 1, column },
+                              { row, column: column - 1 },
+                              { row, column: column + 1 },
+                          ];
+
+                shot_candidates.forEach((shot) => {
+                    legal_shots.forEach((legal_shot) => {
+                        // if the shot is legal, mark it as smart
+                        if (legal_shot.row == shot.row && legal_shot.column == shot.column) legal_shot.smart = true;
+                    });
+                });
+            });
+        });
+    }
+
+    return legal_shots;
 }
