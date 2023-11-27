@@ -11,11 +11,12 @@ export default function PlayPage() {
     const [started, setStarted] = useState(false);
     const [ships, setShips] = useState([]);
     const [direction, setDirection] = useState("right");
+    const [currentShip, setCurrentShip] = useState(null);
 
     useEffect(() => {
         if (!started) {
             function directionOnScroll(e) {
-                const directions = ["left", "right", "up", "down"];
+                const directions = ["right", "down", "left", "up"];
 
                 let current_direction_index = directions.indexOf(direction);
 
@@ -40,13 +41,26 @@ export default function PlayPage() {
         }
     }, [direction, started]);
 
-    function addShip(row, column) {
+    useEffect(() => {
+        if (!started) updateCurrentShip(); // update current ship when direction changes
+    }, [direction, started]);
+
+    function updateCurrentShip(row = currentShip?.cells[0].row, column = currentShip?.cells[0].column) {
         if (ships.length < 5) {
             const new_ship = generateShipObject(direction, 5 - ships.length, row, column);
 
             let invalid = isShipInvalid(new_ship, ships);
 
-            if (!invalid) setShips((ships) => [...ships, new_ship]);
+            if (invalid) new_ship.invalid = true;
+
+            setCurrentShip(new_ship);
+        }
+    }
+
+    function addCurrentShip() {
+        if (currentShip && !currentShip.invalid) {
+            setShips((ships) => [...ships, currentShip]);
+            setCurrentShip(null);
         }
     }
 
@@ -57,7 +71,13 @@ export default function PlayPage() {
                 <h1>place yo ships</h1>
                 <button onClick={() => setShips(generateRandomShips())}>random placement</button>
                 <button onClick={() => setShips([])}>reset board</button>
-                <Board onCellClick={addShip} ships={ships} showOccupied={true} />
+                <Board
+                    onCellHover={updateCurrentShip}
+                    currentShip={currentShip}
+                    onCellClick={addCurrentShip}
+                    ships={ships}
+                    showOccupied={true}
+                />
                 {ships.length >= 5 ? (
                     <div>
                         you placed all ships <button onClick={() => setStarted(true)}>Start</button>

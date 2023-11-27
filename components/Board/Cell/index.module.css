@@ -38,3 +38,11 @@
 .sunk {
     background-color: #ffffff !important;
 }
+
+.currentShip {
+    background-color: red;
+}
+
+.currentShip-invalid {
+    opacity: 0.2;
+}

@@ -1,10 +1,18 @@
 import css from "./index.module.css";
 import generateStyle from "./lib/generateStyle";
 
-export default function Cell({ showOccupied, tips, row, column, onCellClick, ships, misses }) {
+export default function Cell({ showOccupied, tips, row, column, onClick, onHover, ships, misses, currentShip }) {
     function getStyle() {
         let className = css.cell;
         let style = undefined;
+
+        if (currentShip?.cells.some((cell) => cell.row === row && cell.column === column)) {
+            className += ` ${css.currentShip}`;
+
+            if (currentShip.invalid) className += ` ${css["currentShip-invalid"]}`;
+
+            return { style, className };
+        }
 
         if (tips?.some((tip) => tip.row === row && tip.column === column)) {
             className += ` ${css.tip}`;
@@ -46,7 +54,12 @@ export default function Cell({ showOccupied, tips, row, column, onCellClick, shi
     const { style, className } = getStyle();
 
     return (
-        <div style={style} className={className} onClick={() => onCellClick(row, column)}>
+        <div
+            style={style}
+            className={className}
+            onMouseEnter={() => onHover(row, column)}
+            onClick={() => onClick(row, column)}
+        >
             {row} {column}
         </div>
     );
