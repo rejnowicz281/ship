@@ -6,8 +6,7 @@ import generateRandomShips from "../../../../lib/generateRandomShips";
 import css from "./index.module.css";
 import getLegalShots from "./lib/getLegalShots";
 
-export default function Play({ initialPlayerShips }) {
-    const [playerShips, setPlayerShips] = useState(initialPlayerShips);
+export default function Play({ playerShips, setPlayerShips }) {
     const [computerShips, setComputerShips] = useState(generateRandomShips());
     const [computerMisses, setComputerMisses] = useState([]);
     const [playerMisses, setPlayerMisses] = useState([]);

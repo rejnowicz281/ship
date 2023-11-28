@@ -8,6 +8,6 @@ export default function PlayPage() {
     const [started, setStarted] = useState(false);
     const [playerShips, setPlayerShips] = useState([]);
 
-    if (started) return <Play initialPlayerShips={playerShips} />;
+    if (started) return <Play playerShips={playerShips} setPlayerShips={setPlayerShips} />;
     else return <Prepare startGame={() => setStarted(true)} ships={playerShips} setShips={setPlayerShips} />;
 }
