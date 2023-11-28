@@ -6,12 +6,18 @@ export default function Cell({ showOccupied, tips, row, column, onClick, onHover
         let className = css.cell;
         let style = undefined;
 
-        if (currentShip?.cells.some((cell) => cell.row === row && cell.column === column)) {
-            className += ` ${css.currentShip}`;
+        if (currentShip) {
+            const cellIndex = currentShip.cells.findIndex((cell) => cell.row === row && cell.column === column);
+            if (cellIndex > -1) {
+                const isLast = cellIndex == currentShip.cells.length - 1;
+                const isFirst = cellIndex == 0;
 
-            if (currentShip.invalid) className += ` ${css["currentShip-invalid"]}`;
+                style = generateStyle(currentShip.color, currentShip.direction, isLast, isFirst);
 
-            return { style, className };
+                if (currentShip.invalid) className += ` ${css.invalid}`;
+
+                return { style, className };
+            }
         }
 
         if (tips?.some((tip) => tip.row === row && tip.column === column)) {
@@ -23,6 +29,8 @@ export default function Cell({ showOccupied, tips, row, column, onClick, onHover
             className += ` ${css.miss}`;
             return { style, className };
         }
+
+        // if we're here, we're not a tip or a miss, so we're either a ship or empty
 
         let done = false;
 

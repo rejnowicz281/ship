@@ -39,10 +39,6 @@
     background-color: #ffffff !important;
 }
 
-.currentShip {
-    background-color: red;
-}
-
-.currentShip-invalid {
+.invalid {
     opacity: 0.2;
 }
