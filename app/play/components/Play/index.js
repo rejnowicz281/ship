@@ -1,12 +1,12 @@
 "use client";
 
 import Board from "@/components/Board";
+import generateRandomShips from "@/lib/generateRandomShips";
 import { useEffect, useState } from "react";
-import generateRandomShips from "../../../../lib/generateRandomShips";
 import css from "./index.module.css";
 import getLegalShots from "./lib/getLegalShots";
 
-export default function Play({ playerShips, setPlayerShips }) {
+export default function Play({ playerShips, setPlayerShips, smartAI }) {
     const [computerShips, setComputerShips] = useState(generateRandomShips());
     const [computerMisses, setComputerMisses] = useState([]);
     const [playerMisses, setPlayerMisses] = useState([]);
@@ -31,7 +31,7 @@ export default function Play({ playerShips, setPlayerShips }) {
         if (tips) populateTips(); // if tips are shown, update them every time the player shoots
     }, [playerShips, computerShips, playerMisses, computerMisses]);
 
-    function shoot(shooter = "player", random = false, smart = true, initial_row = 0, initial_column = 0) {
+    function shoot(shooter, random, smart, initial_row = 0, initial_column = 0) {
         const misses = shooter == "player" ? playerMisses : computerMisses;
         const setMisses = shooter == "player" ? setPlayerMisses : setComputerMisses;
         const opponentShips = shooter == "player" ? computerShips : playerShips;
@@ -42,14 +42,14 @@ export default function Play({ playerShips, setPlayerShips }) {
         if (legal_shots.length === 0) return; // if there are no legal shots available, don't shoot (this should never happen)
 
         const cell_shot =
+            // if shot is specified as smart, get a smart cell, else get a random cell
             // if shooter is computer or the shot is specified as random, get a random cell
-            // if shot is specified as smart and random, get a smart cell, else get a random cell
             // if shot is not random, get the cell that was given in params (initial_row, initial_column)
-            shooter == "computer" || random
-                ? smart
-                    ? legal_shots.find((shot) => shot.smart) || // if there are no smart shots available, shoot randomly
-                      legal_shots[Math.floor(Math.random() * legal_shots.length)]
-                    : legal_shots[Math.floor(Math.random() * legal_shots.length)]
+            smart
+                ? legal_shots.find((shot) => shot.smart) || // if there are no smart shots available, shoot randomly
+                  legal_shots[Math.floor(Math.random() * legal_shots.length)]
+                : shooter == "computer" || random
+                ? legal_shots[Math.floor(Math.random() * legal_shots.length)]
                 : legal_shots.find((shot) => shot.row === initial_row && shot.column === initial_column);
 
         // check if cell_shot is not undefined (only check if it's not a random shot, since those always return a cell)
@@ -71,7 +71,7 @@ export default function Play({ playerShips, setPlayerShips }) {
             });
         } else setMisses((prev) => [...prev, { row, column }]);
 
-        if (shooter == "player") shoot("computer", true); // make the computer shoot after the player
+        if (shooter == "player") shoot("computer", true, smartAI); // make the computer shoot after the player
     }
 
     function populateTips() {
@@ -102,7 +102,7 @@ export default function Play({ playerShips, setPlayerShips }) {
                 ) : (
                     <>
                         <button onClick={() => shoot("player", true, false)}>random shot</button>
-                        <button onClick={() => shoot("player", true)}>smart shot</button>
+                        <button onClick={() => shoot("player", true, true)}>smart shot</button>
                         <button onClick={() => (tips ? resetTips() : populateTips())}>
                             {tips ? "hide tips" : "show tips"}
                         </button>
