@@ -1,12 +1,17 @@
 import Board from "@/components/Board";
+import generateAdjacentCells from "@/lib/generateAdjacentCells";
 import generateRandomColor from "@/lib/generateRandomColor";
 import generateRandomShips from "@/lib/generateRandomShips";
 import generateShipCells from "@/lib/generateShipCells";
 import generateShipObject from "@/lib/generateShipObject";
 import isShipInvalid from "@/lib/isShipInvalid";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Prepare({ ships, setShips, startGame }) {
+    const queryParams = useSearchParams();
+    const adjacentAllowed = queryParams.get("adjacent") !== "false";
+
     const [currentShip, setCurrentShip] = useState(null); // current ship being placed
 
     useEffect(() => {
@@ -55,6 +60,8 @@ export default function Prepare({ ships, setShips, startGame }) {
                 cells: generateShipCells(5 - ships.length, prev.cells[0].row, prev.cells[0].column, direction),
             };
 
+            if (!adjacentAllowed) new_ship.adjacent_cells = generateAdjacentCells(new_ship.cells);
+
             const invalid = isShipInvalid(new_ship, ships);
 
             if (invalid) new_ship.invalid = true;
@@ -76,6 +83,8 @@ export default function Prepare({ ships, setShips, startGame }) {
                 ...prev,
                 cells: generateShipCells(length, row, column, prev.direction),
             };
+
+            if (!adjacentAllowed) new_ship.adjacent_cells = generateAdjacentCells(new_ship.cells);
 
             const invalid = isShipInvalid(new_ship, ships);
 
@@ -100,7 +109,9 @@ export default function Prepare({ ships, setShips, startGame }) {
 
         const new_ship = generateShipObject("right", length, row, column);
 
-        const invalid = isShipInvalid(new_ship, ships);
+        if (!adjacentAllowed) new_ship.adjacent_cells = generateAdjacentCells(new_ship.cells);
+
+        const invalid = isShipInvalid(new_ship, ships, adjacentAllowed);
 
         if (invalid) new_ship.invalid = true;
 
@@ -123,7 +134,7 @@ export default function Prepare({ ships, setShips, startGame }) {
     return (
         <div>
             <h1>place yo ships</h1>
-            <button onClick={() => setShips(generateRandomShips())}>random placement</button>
+            <button onClick={() => setShips(generateRandomShips(adjacentAllowed))}>random placement</button>
             <button onClick={() => setShips([])}>reset board</button>
             <Board
                 onCellHover={handleCellHover}

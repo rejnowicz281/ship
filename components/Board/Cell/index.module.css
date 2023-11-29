@@ -42,3 +42,7 @@
 .invalid {
     opacity: 0.2;
 }
+
+.adjacent {
+    opacity: 0.5;
+}

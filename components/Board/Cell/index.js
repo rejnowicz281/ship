@@ -1,7 +1,11 @@
+import { useSearchParams } from "next/navigation";
 import css from "./index.module.css";
 import generateStyle from "./lib/generateStyle";
 
 export default function Cell({ showOccupied, tips, row, column, onClick, onHover, ships, misses, currentShip }) {
+    const queryParams = useSearchParams();
+    const adjacentAllowed = queryParams.get("adjacent") !== "false";
+
     function getStyle() {
         let className = css.cell;
         let style = undefined;
@@ -17,6 +21,11 @@ export default function Cell({ showOccupied, tips, row, column, onClick, onHover
                 if (currentShip.invalid) className += ` ${css.invalid}`;
 
                 return { style, className };
+            } else if (!adjacentAllowed) {
+                const adjacent = currentShip.adjacent_cells;
+
+                if (adjacent.some((cell) => cell.row === row && cell.column === column))
+                    className += ` ${css.adjacent}`; // if the cell is adjacent to the current ship, add the adjacent class
             }
         }
 

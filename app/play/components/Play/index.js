@@ -2,12 +2,18 @@
 
 import Board from "@/components/Board";
 import generateRandomShips from "@/lib/generateRandomShips";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import css from "./index.module.css";
 import getLegalShots from "./lib/getLegalShots";
 
-export default function Play({ playerShips, setPlayerShips, smartAI }) {
-    const [computerShips, setComputerShips] = useState(generateRandomShips());
+export default function Play({ playerShips, setPlayerShips }) {
+    const queryParams = useSearchParams();
+
+    const smartAI = queryParams.get("smart") !== "false";
+    const adjacentAllowed = queryParams.get("adjacent") !== "false";
+
+    const [computerShips, setComputerShips] = useState(generateRandomShips(adjacentAllowed));
     const [computerMisses, setComputerMisses] = useState([]);
     const [playerMisses, setPlayerMisses] = useState([]);
     const [tips, setTips] = useState(null);
