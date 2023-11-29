@@ -111,7 +111,7 @@ export default function Prepare({ ships, setShips, startGame }) {
 
         if (!adjacentAllowed) new_ship.adjacent_cells = generateAdjacentCells(new_ship.cells);
 
-        const invalid = isShipInvalid(new_ship, ships, adjacentAllowed);
+        const invalid = isShipInvalid(new_ship, ships);
 
         if (invalid) new_ship.invalid = true;
 
