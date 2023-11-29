@@ -1,6 +1,6 @@
 import { useSearchParams } from "next/navigation";
 import css from "./index.module.css";
-import generateStyle from "./lib/generateStyle";
+import generateStyle, { generateBorder } from "./lib/generateStyle";
 
 export default function Cell({ showOccupied, tips, row, column, onClick, onHover, ships, misses, currentShip }) {
     const queryParams = useSearchParams();
@@ -50,10 +50,17 @@ export default function Cell({ showOccupied, tips, row, column, onClick, onHover
                 if (done) return;
 
                 if (cell.row == row && cell.column == column) {
-                    if (ship.sunk()) className += ` ${css.sunk}`;
-                    else if (cell.hit) className += ` ${css.hit}`;
+                    const shipIsSunk = ship.sunk();
 
-                    if (showOccupied) {
+                    if (shipIsSunk) {
+                        const isLast = i == ship.cells.length - 1;
+                        const isFirst = i == 0;
+
+                        className += ` ${css.sunk}`;
+                        style = generateBorder(ship.direction, isLast, isFirst);
+                    } else if (cell.hit) {
+                        className += ` ${css.hit}`;
+                    } else if (showOccupied) {
                         const isLast = i == ship.cells.length - 1;
                         const isFirst = i == 0;
 

@@ -2,12 +2,13 @@
 
 import Board from "@/components/Board";
 import generateRandomShips from "@/lib/generateRandomShips";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import css from "./index.module.css";
 import getLegalShots from "./lib/getLegalShots";
 
-export default function Play({ playerShips, setPlayerShips }) {
+export default function Play({ playAgain, playerShips, setPlayerShips }) {
     const queryParams = useSearchParams();
 
     const smartAI = queryParams.get("smart") !== "false";
@@ -90,30 +91,39 @@ export default function Play({ playerShips, setPlayerShips }) {
 
     return (
         <div className={css.container}>
-            <div>
-                <h2>your board</h2>
-                <Board ships={playerShips} showOccupied={true} misses={computerMisses} />
-            </div>
-            <div>
+            <Link href="/">back to menu</Link>
+            <div className={css["player-container"]}>
                 <h2>computer board</h2>
                 <Board
                     tips={tips}
                     onCellClick={win ? undefined : (row, column) => shoot("player", false, false, row, column)}
                     ships={computerShips}
-                    showOccupied={true}
+                    showOccupied={false}
                     misses={playerMisses}
                 />
                 {win ? (
-                    <h2>{win === "player" ? "you win!" : win === "computer" ? "you lose :(" : null}</h2>
-                ) : (
                     <>
+                        <h2>{win === "player" ? "you win!" : win === "computer" ? "you lose :(" : null}</h2>
+                        <div>
+                            <button onClick={playAgain}>play again</button>
+                        </div>
+                        <div>
+                            <Link href="/">back to menu</Link>
+                        </div>
+                    </>
+                ) : (
+                    <div>
                         <button onClick={() => shoot("player", true, false)}>random shot</button>
                         <button onClick={() => shoot("player", true, true)}>smart shot</button>
                         <button onClick={() => (tips ? resetTips() : populateTips())}>
                             {tips ? "hide tips" : "show tips"}
                         </button>
-                    </>
+                    </div>
                 )}
+            </div>
+            <div className={css["player-container"]}>
+                <h2>your board</h2>
+                <Board ships={playerShips} showOccupied={true} misses={computerMisses} />
             </div>
         </div>
     );

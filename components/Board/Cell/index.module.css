@@ -3,6 +3,7 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    font-size: 15px;
 }
 
 .cell:hover,
@@ -32,11 +33,11 @@
 }
 
 .hit {
-    background-color: black !important;
+    background-color: black;
 }
 
 .sunk {
-    background-color: #ffffff !important;
+    background-color: #ffffff;
 }
 
 .invalid {

@@ -5,8 +5,10 @@ import generateRandomShips from "@/lib/generateRandomShips";
 import generateShipCells from "@/lib/generateShipCells";
 import generateShipObject from "@/lib/generateShipObject";
 import isShipInvalid from "@/lib/isShipInvalid";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import css from "./index.module.css";
 
 export default function Prepare({ ships, setShips, startGame }) {
     const queryParams = useSearchParams();
@@ -132,21 +134,26 @@ export default function Prepare({ ships, setShips, startGame }) {
     }
 
     return (
-        <div>
+        <div className={css.container}>
+            <Link href="/">back to menu</Link>
+
             <h1>place yo ships</h1>
-            <button onClick={() => setShips(generateRandomShips(adjacentAllowed))}>random placement</button>
             <button onClick={() => setShips([])}>reset board</button>
-            <Board
-                onCellHover={handleCellHover}
-                currentShip={currentShip}
-                onCellClick={addCurrentShip}
-                ships={ships}
-                showOccupied={true}
-            />
+            <button onClick={() => setShips(generateRandomShips(adjacentAllowed))}>random placement</button>
+            <div className={css["board-wrapper"]}>
+                <Board
+                    onCellHover={handleCellHover}
+                    currentShip={currentShip}
+                    onCellClick={addCurrentShip}
+                    ships={ships}
+                    showOccupied={true}
+                />
+            </div>
             {ships.length >= 5 ? (
-                <div>
-                    you placed all ships <button onClick={startGame}>Start</button>
-                </div>
+                <>
+                    <div>you placed all ships</div>
+                    <button onClick={startGame}>Start</button>
+                </>
             ) : (
                 <>
                     {currentShip && <div>current direction: {currentShip.direction}</div>}

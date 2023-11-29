@@ -20,54 +20,60 @@
 
 export default function generateStyle(color, direction, isLast, isFirst) {
     return {
+        ...generateBorder(direction, isLast, isFirst),
+        backgroundColor: color,
+    };
+}
+
+export function generateBorder(direction, isLast, isFirst, thickness = "2px") {
+    return {
         borderLeft:
             direction == "right"
                 ? isFirst
-                    ? "1px solid black"
+                    ? `${thickness} solid black`
                     : "none"
                 : direction == "left"
                 ? isLast
-                    ? "1px solid black"
+                    ? `${thickness} solid black`
                     : "none"
                 : direction == "up" || direction == "down"
-                ? "1px solid black"
+                ? `${thickness} solid black`
                 : null,
         borderRight:
             direction == "right"
                 ? isLast
-                    ? "1px solid black"
+                    ? `${thickness} solid black`
                     : "none"
                 : direction == "left"
                 ? isFirst
-                    ? "1px solid black"
+                    ? `${thickness} solid black`
                     : "none"
                 : direction == "up" || direction == "down"
-                ? "1px solid black"
+                ? `${thickness} solid black`
                 : null,
         borderTop:
             direction == "up"
                 ? isLast
-                    ? "1px solid black"
+                    ? `${thickness} solid black`
                     : "none"
                 : direction == "down"
                 ? isFirst
-                    ? "1px solid black"
+                    ? `${thickness} solid black`
                     : "none"
                 : direction == "right" || direction == "left"
-                ? "1px solid black"
+                ? `${thickness} solid black`
                 : null,
         borderBottom:
             direction == "up"
                 ? isFirst
-                    ? "1px solid black"
+                    ? `${thickness} solid black`
                     : "none"
                 : direction == "down"
                 ? isLast
-                    ? "1px solid black"
+                    ? `${thickness} solid black`
                     : "none"
                 : direction == "right" || direction == "left"
-                ? "1px solid black"
+                ? `${thickness} solid black`
                 : null,
-        backgroundColor: color,
     };
 }
