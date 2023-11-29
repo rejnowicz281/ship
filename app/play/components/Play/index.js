@@ -107,9 +107,6 @@ export default function Play({ playAgain, playerShips, setPlayerShips }) {
                         <div>
                             <button onClick={playAgain}>play again</button>
                         </div>
-                        <div>
-                            <Link href="/">back to menu</Link>
-                        </div>
                     </>
                 ) : (
                     <div>
