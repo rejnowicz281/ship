@@ -43,7 +43,7 @@ export default function Play({ playerShips, setPlayerShips }) {
         const opponentShips = shooter == "player" ? computerShips : playerShips;
         const setOpponentShips = shooter == "player" ? setComputerShips : setPlayerShips;
 
-        const legal_shots = getLegalShots(misses, opponentShips, smart);
+        const legal_shots = getLegalShots(misses, opponentShips, smart, adjacentAllowed);
 
         if (legal_shots.length === 0) return; // if there are no legal shots available, don't shoot (this should never happen)
 

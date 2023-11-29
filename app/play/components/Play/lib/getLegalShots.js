@@ -1,4 +1,4 @@
-export default function getLegalShots(misses, opponentShips, smart) {
+export default function getLegalShots(misses, opponentShips, smart, adjacentAllowed) {
     const legal_shots = [...Array(10).keys()]
         .map(
             (i) =>
@@ -27,20 +27,44 @@ export default function getLegalShots(misses, opponentShips, smart) {
         .flat();
 
     if (smart) {
+        // check if there is only one ship left (this is only needed if adjacentAllowed is true)
+        const last_ship_check = adjacentAllowed && opponentShips.filter((ship) => !ship.sunk()).length === 1;
+
         opponentShips.forEach((ship) => {
             if (ship.sunk()) return;
+
+            // if adjacentAllowed is false or the ship is last, get the cells of the ship that have been hit
+            const hit_cells = !adjacentAllowed || last_ship_check ? ship.cells.filter((cell) => cell.hit) : null;
+            const orientation =
+                hit_cells?.length > 1 // if there are more than one hit cells, we can determine the orientation of the ship
+                    ? ship.direction === "left" || ship.direction === "right"
+                        ? "horizontal"
+                        : "vertical"
+                    : null;
 
             ship.cells.forEach((cell) => {
                 if (!cell.hit) return;
 
                 const { row, column } = cell;
 
-                const shot_candidates = [
-                    { row: row - 1, column },
-                    { row: row + 1, column },
-                    { row, column: column - 1 },
-                    { row, column: column + 1 },
-                ];
+                const shot_candidates =
+                    orientation === "horizontal"
+                        ? [
+                              { row, column: column - 1 },
+                              { row, column: column + 1 },
+                          ]
+                        : orientation === "vertical"
+                        ? [
+                              { row: row - 1, column },
+                              { row: row + 1, column },
+                          ]
+                        : [
+                              // if orientation is not specified, check all adjacent cells
+                              { row: row - 1, column },
+                              { row: row + 1, column },
+                              { row, column: column - 1 },
+                              { row, column: column + 1 },
+                          ];
 
                 shot_candidates.forEach((shot) => {
                     legal_shots.forEach((legal_shot) => {
