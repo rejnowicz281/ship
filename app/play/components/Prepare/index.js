@@ -8,6 +8,7 @@ import isShipInvalid from "@/lib/isShipInvalid";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaArrowRotateRight } from "react-icons/fa6";
 import css from "./index.module.css";
 
 export default function Prepare({ ships, setShips, startGame }) {
@@ -133,6 +134,21 @@ export default function Prepare({ ships, setShips, startGame }) {
         setShips((ships) => [...ships, currentShip]);
     }
 
+    function rotateCurrentShip() {
+        if (!currentShip) return;
+
+        const direction =
+            currentShip.direction === "right"
+                ? "down"
+                : currentShip.direction === "down"
+                ? "left"
+                : currentShip.direction === "left"
+                ? "up"
+                : "right";
+
+        setCurrentShipDirection(direction);
+    }
+
     return (
         <div className={css.container}>
             <Link href="/">back to menu</Link>
@@ -156,8 +172,24 @@ export default function Prepare({ ships, setShips, startGame }) {
                 </>
             ) : (
                 <>
-                    {currentShip && <div>current direction: {currentShip.direction}</div>}
-                    <div>you have {5 - ships.length} ships left to place</div>
+                    {currentShip ? (
+                        <>
+                            <div>current direction: {currentShip.direction}</div>
+                            <button className={css.rotate} onClick={rotateCurrentShip}>
+                                <FaArrowRotateRight />
+                                rotate
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <div>hover over a cell to place a ship</div>
+                            <div>you can rotate your ship with the mouse wheel</div>
+                        </>
+                    )}
+                    <div>
+                        <hr />
+                        you have {5 - ships.length} ships left to place
+                    </div>
                 </>
             )}
         </div>
