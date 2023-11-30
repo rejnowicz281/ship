@@ -23,19 +23,19 @@ export default function Prepare({ ships, setShips, startGame }) {
         function directionOnScroll(e) {
             const directions = ["right", "down", "left", "up"];
 
-            let current_direction_index = directions.indexOf(currentShip.direction);
+            let currentDirectionIndex = directions.indexOf(currentShip.direction);
 
             if (e.deltaY > 0) {
                 // if scrolling down, change direction clockwise
-                if (current_direction_index === 3) current_direction_index = 0;
-                else current_direction_index++;
+                if (currentDirectionIndex === 3) currentDirectionIndex = 0;
+                else currentDirectionIndex++;
             } else {
                 // if scrolling up, change direction counter-clockwise
-                if (current_direction_index === 0) current_direction_index = 3;
-                else current_direction_index--;
+                if (currentDirectionIndex === 0) currentDirectionIndex = 3;
+                else currentDirectionIndex--;
             }
 
-            setCurrentShipDirection(directions[current_direction_index]);
+            setCurrentShipDirection(directions[currentDirectionIndex]);
         }
 
         document.addEventListener("wheel", directionOnScroll);
@@ -57,20 +57,20 @@ export default function Prepare({ ships, setShips, startGame }) {
         if (!currentShip) return;
 
         setCurrentShip((prev) => {
-            const new_ship = {
+            const newShip = {
                 ...prev,
                 direction,
                 cells: generateShipCells(5 - ships.length, prev.cells[0].row, prev.cells[0].column, direction),
             };
 
-            if (!adjacentAllowed) new_ship.adjacent_cells = generateAdjacentCells(new_ship.cells);
+            if (!adjacentAllowed) newShip.adjacentCells = generateAdjacentCells(newShip.cells);
 
-            const invalid = isShipInvalid(new_ship, ships);
+            const invalid = isShipInvalid(newShip, ships);
 
-            if (invalid) new_ship.invalid = true;
-            else delete new_ship.invalid;
+            if (invalid) newShip.invalid = true;
+            else delete newShip.invalid;
 
-            return new_ship;
+            return newShip;
         });
     }
 
@@ -82,19 +82,19 @@ export default function Prepare({ ships, setShips, startGame }) {
         if (!currentShip) return;
 
         setCurrentShip((prev) => {
-            const new_ship = {
+            const newShip = {
                 ...prev,
                 cells: generateShipCells(length, row, column, prev.direction),
             };
 
-            if (!adjacentAllowed) new_ship.adjacent_cells = generateAdjacentCells(new_ship.cells);
+            if (!adjacentAllowed) newShip.adjacentCells = generateAdjacentCells(newShip.cells);
 
-            const invalid = isShipInvalid(new_ship, ships);
+            const invalid = isShipInvalid(newShip, ships);
 
-            if (invalid) new_ship.invalid = true;
-            else delete new_ship.invalid;
+            if (invalid) newShip.invalid = true;
+            else delete newShip.invalid;
 
-            return new_ship;
+            return newShip;
         });
     }
 
@@ -110,15 +110,15 @@ export default function Prepare({ ships, setShips, startGame }) {
     function generateCurrentShip(row, column, length = 5 - ships.length) {
         if (length < 1) return;
 
-        const new_ship = generateShipObject("right", length, row, column);
+        const newShip = generateShipObject("right", length, row, column);
 
-        if (!adjacentAllowed) new_ship.adjacent_cells = generateAdjacentCells(new_ship.cells);
+        if (!adjacentAllowed) newShip.adjacentCells = generateAdjacentCells(newShip.cells);
 
-        const invalid = isShipInvalid(new_ship, ships);
+        const invalid = isShipInvalid(newShip, ships);
 
-        if (invalid) new_ship.invalid = true;
+        if (invalid) newShip.invalid = true;
 
-        setCurrentShip(new_ship);
+        setCurrentShip(newShip);
     }
 
     function handleCellHover(row, column) {

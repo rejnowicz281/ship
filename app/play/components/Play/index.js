@@ -38,31 +38,31 @@ export default function Play({ playAgain, playerShips, setPlayerShips }) {
         if (tips) populateTips(); // if tips are shown, update them every time the player shoots
     }, [playerShips, computerShips, playerMisses, computerMisses]);
 
-    function shoot(shooter, random, smart, initial_row = 0, initial_column = 0) {
+    function shoot(shooter, random, smart, initialRow = 0, initialColumn = 0) {
         const misses = shooter == "player" ? playerMisses : computerMisses;
         const setMisses = shooter == "player" ? setPlayerMisses : setComputerMisses;
         const opponentShips = shooter == "player" ? computerShips : playerShips;
         const setOpponentShips = shooter == "player" ? setComputerShips : setPlayerShips;
 
-        const legal_shots = getLegalShots(misses, opponentShips, smart, adjacentAllowed);
+        const legalShots = getLegalShots(misses, opponentShips, smart, adjacentAllowed);
 
-        if (legal_shots.length === 0) return; // if there are no legal shots available, don't shoot (this should never happen)
+        if (legalShots.length === 0) return; // if there are no legal shots available, don't shoot (this should never happen)
 
-        const cell_shot =
+        const cellShot =
             // if shot is specified as smart, get a smart cell, else get a random cell
             // if shooter is computer or the shot is specified as random, get a random cell
-            // if shot is not random, get the cell that was given in params (initial_row, initial_column)
+            // if shot is not random, get the cell that was given in params (initialRow, initialColumn)
             smart
-                ? legal_shots.find((shot) => shot.smart) || // if there are no smart shots available, shoot randomly
-                  legal_shots[Math.floor(Math.random() * legal_shots.length)]
+                ? legalShots.find((shot) => shot.smart) || // if there are no smart shots available, shoot randomly
+                  legalShots[Math.floor(Math.random() * legalShots.length)]
                 : shooter == "computer" || random
-                ? legal_shots[Math.floor(Math.random() * legal_shots.length)]
-                : legal_shots.find((shot) => shot.row === initial_row && shot.column === initial_column);
+                ? legalShots[Math.floor(Math.random() * legalShots.length)]
+                : legalShots.find((shot) => shot.row === initialRow && shot.column === initialColumn);
 
-        // check if cell_shot is not undefined (only check if it's not a random shot, since those always return a cell)
-        if (!random && !cell_shot) return;
+        // check if cellShot is not undefined (only check if it's not a random shot, since those always return a cell)
+        if (!random && !cellShot) return;
 
-        const { row, column, occupied } = cell_shot; // get the row, column and occupied status of the cell that was shot
+        const { row, column, occupied } = cellShot; // get the row, column and occupied status of the cell that was shot
 
         if (occupied) {
             const shipHit = opponentShips.find((ship) => {
@@ -77,7 +77,7 @@ export default function Play({ playAgain, playerShips, setPlayerShips }) {
             setOpponentShips((prev) => [...prev, shipHit]);
 
             if (!adjacentAllowed && shipHit.sunk()) {
-                shipHit.adjacent_cells.forEach((cell) => {
+                shipHit.adjacentCells.forEach((cell) => {
                     setMisses((prev) => {
                         if (prev.some((miss) => miss.row === cell.row && miss.column === cell.column))
                             return prev; // prevent duplicates

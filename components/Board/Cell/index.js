@@ -22,7 +22,7 @@ export default function Cell({ showOccupied, tips, row, column, onClick, onHover
 
                 return { style, className };
             } else if (!adjacentAllowed) {
-                const adjacent = currentShip.adjacent_cells;
+                const adjacent = currentShip.adjacentCells;
 
                 if (adjacent.some((cell) => cell.row === row && cell.column === column))
                     className += ` ${css.adjacent}`; // if the cell is adjacent to the current ship, add the adjacent class
