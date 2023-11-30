@@ -65,17 +65,26 @@ export default function Play({ playAgain, playerShips, setPlayerShips }) {
         const { row, column, occupied } = cell_shot; // get the row, column and occupied status of the cell that was shot
 
         if (occupied) {
-            setOpponentShips((prev) => {
-                return prev.map((ship) => {
-                    const updatedCells = ship.cells.map((cell) => {
-                        if (cell.row === row && cell.column === column) return { ...cell, hit: true };
-                        // if the cell is the one that was shot, return the cell with hit set to true
+            const shipHit = opponentShips.find((ship) => {
+                const cellHit = ship.cells.find((cell) => cell.row === row && cell.column === column);
 
-                        return cell;
-                    });
-                    return { ...ship, cells: updatedCells };
-                });
+                if (cellHit) {
+                    cellHit.hit = true;
+                    return ship; // if the cell was found, mark it as hit and return the ship
+                }
             });
+
+            setOpponentShips((prev) => [...prev, shipHit]);
+
+            if (!adjacentAllowed && shipHit.sunk()) {
+                shipHit.adjacent_cells.forEach((cell) => {
+                    setMisses((prev) => {
+                        if (prev.some((miss) => miss.row === cell.row && miss.column === cell.column))
+                            return prev; // prevent duplicates
+                        else return [...prev, { row: cell.row, column: cell.column }]; // add the adjacent cell to the misses array
+                    });
+                });
+            }
         } else setMisses((prev) => [...prev, { row, column }]);
 
         if (shooter == "player") shoot("computer", true, smartAI); // make the computer shoot after the player
